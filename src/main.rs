@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, string};
 use std::path::Path;
 use termcolor::Color;
 use std::fs::File;
@@ -32,6 +32,9 @@ Author: x_Coding (xcoding.dev@gmail.com)
 // Entry point function.
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let mut ext_only=false;
+    let mut file=String::new();
+    let mut arg1=String::new();
 
     // In case of no argument is passed to application.
     if args.len() == 1 {
@@ -39,8 +42,12 @@ fn main() {
         return;
     }
 
-    // Read first parameter.
-    let arg1 = &args[1];
+    // Read parameters.
+    for (i, arg) in args.iter().enumerate() {
+        if i >0{
+            arg1.push_str(arg);
+        }
+    }
 
     // Display help message.
     if arg1 == "-h" {
@@ -55,15 +62,23 @@ fn main() {
         return;
     }
 
-    // Check if argument file exist.
-    let exist_file_from_arg : bool =  Path::new(arg1).is_file();
-    if !exist_file_from_arg {
-        write_color("Error: File '".to_owned()+ arg1 +"' does not exist!",true,Color::Red);  
-        return;
+    // Check if contains parameter -ext
+    if arg1.trim().ends_with("-ext"){
+        file = arg1.trim().replace("-ext", "").trim().to_string();
+        ext_only = true;
+    }else {
+        file = arg1.trim().to_string();
     }
 
+    // Check if argument file exist.
+    let exist_file_from_arg : bool =  Path::new(&file).is_file();
+    if !exist_file_from_arg {
+        write_color("Error: File '".to_owned()+ &file +"' does not exist!",true,Color::Red);  
+        return;
+    }   
+
     // Read file 
-    let mut file_to_read = get_file(String::from(arg1));
+    let mut file_to_read = get_file(String::from(&file));
 
     let mut buff = [0; GLOBAL_BUFFER_LENGTH];
     let mut count_loops:i32 =0;
@@ -96,7 +111,7 @@ fn main() {
     }
 
     // Print the final result;
-    check_ext(arg1, hex_line.as_str(), EXT_FILE);
+    check_ext(&file, hex_line.as_str(), EXT_FILE,ext_only);
 }
 
 // Open file.
