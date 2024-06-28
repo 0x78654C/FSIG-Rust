@@ -1,4 +1,8 @@
 use std::fs::read_to_string;
+use termcolor::Color;
+#[path="color_write.rs"]
+mod color_write_lib;
+use crate::color_write_lib::write_color;
 
 // Check if line contains magic number.
 pub fn check_ext(filename: &str, hex_line:&str, ext_file:&str, ext_only:bool) {
@@ -17,6 +21,9 @@ pub fn check_ext(filename: &str, hex_line:&str, ext_file:&str, ext_only:bool) {
     Hex signature: "+&split[0]+"
     Description:   "+&split[2]+"
     -------------------------------------------------------------";
+            }
+            if output.len() < 2{
+                write_color("File signature not found for this type!".to_owned(),true,Color::Yellow);  
             }
             println!("{}",output);
             break;
